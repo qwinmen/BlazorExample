@@ -28,6 +28,7 @@
     [Parameter, EditorRequired]
 	public Trail Trail { get; set; } = default!; // = значение по-умолчанию, доскающее при этом null
 
+    //EventCallback автоматически вызовет StateHasChanged (выполнит перерисовку родительского компонента)
     [Parameter]
     public EventCallback<Trail> OnSelected { get; set; }
 }
