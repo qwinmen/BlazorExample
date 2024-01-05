@@ -26,7 +26,7 @@
   </Target>
 
   <Target Name="RunNpmInstall" BeforeTargets="CompileScopedScss" Inputs="package.json" Outputs="$(NpmLastInstall)">
-    <Exec Command="npm install"/>
+    <Exec Command="npm install" />
     <Touch Files="$(NpmLastInstall)" AlwaysCreate="true" />
   </Target>
 
