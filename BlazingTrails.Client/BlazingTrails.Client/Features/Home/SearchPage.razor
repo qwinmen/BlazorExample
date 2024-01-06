@@ -1,6 +1,6 @@
 @page "/search/{SearchTerm}"
+@page "/search/{SearchTerm}/maxlength/{MaxLength:int}"
 @inject HttpClient Http
-@inject NavigationManager NavManager
 
 <PageTitle>Search Trails - Blazing Trails</PageTitle>
 <nav aria-label="breadcrumb">
@@ -8,33 +8,42 @@
 		<li class="breadcrumb-item">
 			<a href="/">Home</a>
 		</li>
-        <li class="breadcrumb-item active" aria-current="page">Search</li>
+		<li class="breadcrumb-item active" aria-current="page">Search</li>
 	</ol>
 </nav>
 
 <h3 class="mt-5 mb-4">Результаты поиска: "@SearchTerm"</h3>
+<SearchFilter SearchTerm="@SearchTerm"/>
 @if (_searchResults == null)
 {
-    <p>Loading search results...</p>
+	<p>Loading search results...</p>
 }
 else
 {
-	<TrailDetails Trail="_selectedTrail" />
+	<TrailDetails Trail="_selectedTrail"/>
 	<div class="grid">
-        @foreach (var trail in _searchResults)
-        {
-	        <TrailCard Trail="trail" OnSelected="HandleTrailSelected" />
-        }
+		@foreach (var trail in _searchResults)
+		{
+			<TrailCard Trail="trail" OnSelected="HandleTrailSelected"/>
+		}
 	</div>
 }
 
 @code
 {
+	/// <summary>
+	///     Для хранения копии неотфильтрованных результатов поиска
+	/// </summary>
+	private IEnumerable<Trail> _cachedSearchResults = Array.Empty<Trail>();
+
 	private IEnumerable<Trail>? _searchResults;
 	private Trail? _selectedTrail;
 
-    [Parameter]
+	[Parameter]
 	public string SearchTerm { get; set; } = default!;
+
+	[Parameter]
+	public int? MaxLength { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -43,11 +52,24 @@ else
 			IEnumerable<Trail>? allTrails = await Http.GetFromJsonAsync<IEnumerable<Trail>>("trails/trail-data.json");
 			_searchResults = allTrails!.Where(x => x.Name.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase)
 				|| x.Location.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase));
+			_cachedSearchResults = _searchResults;
 		}
 		catch (HttpRequestException exception)
 		{
 			Console.WriteLine(exception.Message);
 			throw;
+		}
+	}
+
+	protected override void OnParametersSet()
+	{
+		if (_cachedSearchResults.Any() && MaxLength.HasValue)
+		{
+			_searchResults = _cachedSearchResults.Where(x => x.Length <= MaxLength.Value);
+		}
+		else if(_cachedSearchResults.Any() && MaxLength is null)
+		{
+			_searchResults = _cachedSearchResults;
 		}
 	}
 
