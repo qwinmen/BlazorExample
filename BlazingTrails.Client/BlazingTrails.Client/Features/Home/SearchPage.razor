@@ -42,9 +42,14 @@ else
 	[Parameter]
 	public string SearchTerm { get; set; } = default!;
 
-	[Parameter]
+	[Parameter, SupplyParameterFromQuery]
 	public int? MaxLength { get; set; }
 
+    //SupplyParameterFromQuery - говорит о том, что значение для параметра MaxTime будет браться из URL
+	[Parameter, SupplyParameterFromQuery]
+    public int? MaxTime { get; set; }
+
+	//Метод состояния Blazor. Будет вызван один раз при загрузке компонента, аналог конструктора
 	protected override async Task OnInitializedAsync()
 	{
 		try
@@ -61,20 +66,33 @@ else
 		}
 	}
 
+    //Метод состояния Blazor. Будет вызван каждый раз при любом изменении параметров Url или значений полей html
 	protected override void OnParametersSet()
 	{
-		if (_cachedSearchResults.Any() && MaxLength.HasValue)
-		{
-			_searchResults = _cachedSearchResults.Where(x => x.Length <= MaxLength.Value);
-		}
-		else if(_cachedSearchResults.Any() && MaxLength is null)
-		{
-			_searchResults = _cachedSearchResults;
-		}
+		UpdateFilters();
 	}
 
 	private void HandleTrailSelected(Trail trail)
 	{
 		_selectedTrail = trail;
+	}
+
+	private void UpdateFilters()
+	{
+		List<Func<Trail, bool>> filters = new List<Func<Trail, bool>>();
+		if (MaxLength is not null && MaxLength > 0)
+			filters.Add(x => x.Length <= MaxLength);
+
+		if (MaxTime is not null && MaxTime > 0)
+			filters.Add(x => x.TimeInMinutes <= MaxTime * 60);
+
+		if (filters.Any())
+		{
+			_searchResults = _cachedSearchResults.Where(trail => filters.All(filter => filter(trail)));
+		}
+		else
+		{
+			_searchResults = _cachedSearchResults;
+		}
 	}
 }
