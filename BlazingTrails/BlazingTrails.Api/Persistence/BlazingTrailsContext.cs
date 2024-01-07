@@ -9,6 +9,11 @@ namespace BlazingTrails.Api.Persistence
 	/// </summary>
 	public class BlazingTrailsContext: DbContext
 	{
+		public BlazingTrailsContext(DbContextOptions options)
+			: base(options)
+		{
+		}
+
 		public DbSet<Trail> Trails => Set<Trail>();
 		public DbSet<RouteInstruction> RouteInstructions => Set<RouteInstruction>();
 
