@@ -11,6 +11,36 @@
 
 <h3 class="mt-5 mb-4">Add a trail</h3>
 <EditForm Model="_trail" OnValidSubmit="SubmitForm">
+	<FormSection Title="Базовое описание тропы"
+	             HelpText="Содержит основную информацию о тропе, такую как имя, описание, расположение">
+		<div class="row">
+			<div class="col-6">
+				<div class="form-group">
+					<label for="trailName" class="font-weight-bold text-secondary">Name</label>
+					<InputText @bind-Value="_trail.Name" class="form-control" id="trailName" />
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col">
+				<div class="form-group">
+					<label for="trailDescription" class="font-weight-bold text-secondary">Description</label>
+					<InputTextArea @bind-Value="_trail.Description" rows="6" class="form-control" id="trailDescription" />
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-6">
+				<div class="form-group">
+					<label for="trailLocation" class="font-weight-bold text-secondary">Location</label>
+					<InputText @bind-Value="_trail.Location" class="form-control" id="trailLocation" />
+				</div>
+			</div>
+		</div>
+	</FormSection>
+
 	<div class="mt-4 mb-5">
 		<div class="row">
 			<div class="offset-4 col-8 text-right">
