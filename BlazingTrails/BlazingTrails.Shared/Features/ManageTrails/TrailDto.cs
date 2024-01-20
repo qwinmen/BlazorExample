@@ -32,6 +32,17 @@ namespace BlazingTrails.Shared.Features.ManageTrails
 			RuleFor(x => x.Location).NotEmpty().WithMessage("Местонахождение (локация) не заполнено!");
 			RuleFor(x => x.Length).GreaterThan(0).WithMessage("Укажите длину маршрута!");
 			RuleFor(x => x.Route).NotEmpty().WithMessage("Укажите одну и более дорожную инструкцию!");
+			
+			RuleForEach(x => x.Route).SetValidator(new RouteInstructionValidator());
+		}
+	}
+
+	public class RouteInstructionValidator: AbstractValidator<TrailDto.RouteInstruction>
+	{
+		public RouteInstructionValidator()
+		{
+			RuleFor(x => x.Stage).NotEmpty().WithMessage("Please enter Stage number");
+			RuleFor(x => x.Description).NotEmpty().WithMessage("Please enter Description");
 		}
 	}
 }
