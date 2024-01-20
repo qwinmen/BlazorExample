@@ -6,9 +6,12 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+//РџРѕРґРєР»СЋС‡Р°РµРј MediatR:
+builder.Services.AddMediatR(configuration => configuration.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 await builder.Build().RunAsync();
 
-//Репозиторий туториала книги "Blazor в действии":
+//Р РµРїРѕР·РёС‚РѕСЂРёР№ С‚СѓС‚РѕСЂРёР°Р»Р° РєРЅРёРіРё "Blazor РІ РґРµР№СЃС‚РІРёРё":
 //https://github.com/chrissainty/blazor-in-action/
