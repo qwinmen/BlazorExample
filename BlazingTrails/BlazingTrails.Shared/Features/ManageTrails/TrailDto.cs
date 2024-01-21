@@ -31,6 +31,7 @@ namespace BlazingTrails.Shared.Features.ManageTrails
 			RuleFor(x => x.Description).NotEmpty().WithMessage("Описание не заполнено!");
 			RuleFor(x => x.Location).NotEmpty().WithMessage("Местонахождение (локация) не заполнено!");
 			RuleFor(x => x.Length).GreaterThan(0).WithMessage("Укажите длину маршрута!");
+			RuleFor(x => x.TimeInMinutes).GreaterThan(0).WithMessage("Укажите затрачиваемое на маршрут время!");
 			RuleFor(x => x.Route).NotEmpty().WithMessage("Укажите одну и более дорожную инструкцию!");
 			
 			RuleForEach(x => x.Route).SetValidator(new RouteInstructionValidator());
