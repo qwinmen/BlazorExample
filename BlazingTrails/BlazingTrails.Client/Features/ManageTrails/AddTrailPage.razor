@@ -53,6 +53,11 @@ else if (_errorMessage is not null)
 			<InputText @bind-Value="_trail.Location" class="form-control" id="trailLocation"/>
 			<ValidationMessage For="() => _trail.Location" />
 		</FormFieldSet>
+
+		<FormFieldSet>
+			<label for="trailImage" class="font-weight-bold text-secondary">Image</label>
+			<InputFile OnChange="LoadTrailImage" class="form-control-file" id="trailImage" accept=".png,.jpg,.jpeg" />
+		</FormFieldSet>
 	</FormSection>
 
 	<FormSection Title="Сложность" HelpText="Сообщает другим пользователям о сложности маршрута через его протяженность">
@@ -129,6 +134,7 @@ else if (_errorMessage is not null)
 	private bool _submitSuccessful;
 	private string? _errorMessage;
 	private EditContext _editContext = default!;
+	private IBrowserFile? _trailImage;
 
 	private async Task SubmitForm()
 	{
@@ -140,14 +146,45 @@ else if (_errorMessage is not null)
             return;
 		}
 
-		_trail = new TrailDto();
-		_errorMessage = null;
+		if (_trailImage is null)
+		{
+			_submitSuccessful = true;
+			ResetForm();
+            return;
+		}
+
+		await ProcessImage(response.TrailId);
+	}
+
+	private async Task ProcessImage(int trailId)
+	{
+		var imgUploadResponse = await Mediator.Send(new UploadTrailImageRequest(trailId, _trailImage));
+
+		if (string.IsNullOrWhiteSpace(imgUploadResponse.ImageName))
+		{
+			_errorMessage = "Имя изображения невалидно!";
+            return;
+		}
 		_submitSuccessful = true;
+        ResetForm();
+	}
+
+	private void ResetForm()
+	{
+        _trail = new TrailDto();
+		_editContext = new EditContext(_trail);
+		_editContext.SetFieldCssClassProvider(new BootstrapCssClassProvider());
+		_trailImage = null;
 	}
 
 	protected override void OnInitialized()
 	{
 		_editContext = new EditContext(_trail);
         _editContext.SetFieldCssClassProvider(new BootstrapCssClassProvider());
+	}
+
+	private void LoadTrailImage(InputFileChangeEventArgs e)
+	{
+		_trailImage = e.File;
 	}
 }
