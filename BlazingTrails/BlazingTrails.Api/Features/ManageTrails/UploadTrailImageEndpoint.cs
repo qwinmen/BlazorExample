@@ -21,9 +21,13 @@ namespace BlazingTrails.Api.Features.ManageTrails
 			_database = database;
 		}
 
-		[HttpPost(UploadTrailImageRequest.RouteTemplate)]
-		public override async Task<ActionResult<string>> HandleAsync([FromRoute] int trailId, CancellationToken cancellationToken = new CancellationToken())
+		[HttpPost(UploadTrailImageRequest.RouteTemplateApi)]
+		public override async Task<ActionResult<string>> HandleAsync(int trailId, CancellationToken cancellationToken = new())
 		{
+
+			if (trailId < 1)
+				throw new Exception("Идентификатор тропы не указан, либо меньше 1");
+
 			Trail? trail = await _database.Trails.SingleOrDefaultAsync(x => x.Id == trailId, cancellationToken);
 			if (trail is null)
 			{

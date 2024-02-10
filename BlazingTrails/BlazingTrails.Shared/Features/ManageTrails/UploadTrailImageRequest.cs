@@ -10,8 +10,9 @@ namespace BlazingTrails.Shared.Features.ManageTrails
 
 		/// <summary>
 		///     Шаблон маршрута для запроса.
-		///     Examlpe use: string.Format(UploadTrailImageRequest.RouteTemplate, TrailId)
 		/// </summary>
-		public const string RouteTemplate = "/api/trails/{0}/images";
+		public const string RouteTemplateApi = "/api/trails/{trailId}/images";
+
+		public static string RouteTemplateFormat(int t) => RouteTemplateApi.Replace("{trailId}", t.ToString());
 	}
 }
