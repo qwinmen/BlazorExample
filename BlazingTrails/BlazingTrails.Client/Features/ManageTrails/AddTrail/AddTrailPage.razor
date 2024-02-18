@@ -1,0 +1,73 @@
+@page "/add-trail"
+@inject IMediator Mediator
+
+<PageTitle>Add Trail - New blazing trail!</PageTitle>
+
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+		<li class="breadcrumb-item"><a href="/">Home</a></li>
+		<li class="breadcrumb-item active" aria-current="page">Add trail</li>
+	</ol>
+</nav>
+
+<h3 class="mt-5 mb-4">Add a trail</h3>
+
+@if (_submitSuccessful)
+{
+	<SuccessAlert Message="Тропа добавлена, поздравляем!" />
+}
+else if (_errorMessage is not null)
+{
+	<ErrorAlert Message="@_errorMessage" />
+}
+
+<TrailForm @ref="_trailForm" OnSubmit="SubmitNewTrail" />
+
+@code
+{
+	private TrailForm _trailForm = default!;
+	private bool _submitSuccessful;
+	private string? _errorMessage;
+
+	private async Task SubmitNewTrail(TrailDto trail, IBrowserFile? image)
+	{
+		AddTrailRequest.Response response = await Mediator.Send(new AddTrailRequest(trail));
+		if (response.TrailId == -1)
+		{
+			_submitSuccessful = false;
+			_errorMessage = "Проблема сохранения тропы";
+            //Ручное обновление польз. интерфейса:
+            StateHasChanged();
+            return;
+		}
+
+		if (image is null)
+		{
+			_submitSuccessful = true;
+            _trailForm.ResetForm();
+            StateHasChanged();
+            return;
+		}
+
+		_submitSuccessful = await ProcessImage(response.TrailId, image);
+		if (_submitSuccessful)
+		{
+			_trailForm.ResetForm();
+		}
+
+        StateHasChanged();
+	}
+
+	private async Task<bool> ProcessImage(int trailId, IBrowserFile trailImage)
+	{
+		var imgUploadResponse = await Mediator.Send(new UploadTrailImageRequest(trailId, trailImage));
+
+		if (string.IsNullOrWhiteSpace(imgUploadResponse.ImageName))
+		{
+			_errorMessage = "Имя изображения пустое!";
+			return false;
+		}
+
+		return true;
+	}
+}

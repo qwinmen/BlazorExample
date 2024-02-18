@@ -2,12 +2,12 @@ using System.Net.Http.Json;
 using BlazingTrails.Shared.Features.ManageTrails;
 using MediatR;
 
-namespace BlazingTrails.Client.Features.ManageTrails
+namespace BlazingTrails.Client.Features.ManageTrails.AddTrail
 {
 	/// <summary>
 	///     Обработчик запроса
 	/// </summary>
-	public class AddTrailHandler: IRequestHandler<AddTrailRequest, AddTrailRequest.Response>
+	public class AddTrailHandler : IRequestHandler<AddTrailRequest, AddTrailRequest.Response>
 	{
 		private readonly HttpClient _httpClient;
 
