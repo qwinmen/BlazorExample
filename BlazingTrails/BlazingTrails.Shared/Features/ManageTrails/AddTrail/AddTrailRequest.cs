@@ -1,13 +1,14 @@
+using BlazingTrails.Shared.Features.ManageTrails.Shared;
 using FluentValidation;
 using MediatR;
 
-namespace BlazingTrails.Shared.Features.ManageTrails
+namespace BlazingTrails.Shared.Features.ManageTrails.AddTrail
 {
 	/// <summary>
 	///     record тип считается лучшим для обьектов передачи данных (Dto), т.к. неизменяются
 	/// </summary>
 	/// <param name="Trail"></param>
-	public record AddTrailRequest(TrailDto Trail): IRequest<AddTrailRequest.Response>
+	public record AddTrailRequest(TrailDto Trail) : IRequest<AddTrailRequest.Response>
 	{
 		/// <summary>
 		///     Данные ответа на запрос
@@ -24,7 +25,7 @@ namespace BlazingTrails.Shared.Features.ManageTrails
 	/// <summary>
 	///     Валидатор запроса
 	/// </summary>
-	public class AddTrailRequestValidator: AbstractValidator<AddTrailRequest>
+	public class AddTrailRequestValidator : AbstractValidator<AddTrailRequest>
 	{
 		public AddTrailRequestValidator()
 		{

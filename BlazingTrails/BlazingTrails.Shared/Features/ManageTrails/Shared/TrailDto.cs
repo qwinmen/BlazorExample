@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace BlazingTrails.Shared.Features.ManageTrails
+namespace BlazingTrails.Shared.Features.ManageTrails.Shared
 {
 	public class TrailDto
 	{
@@ -17,13 +17,30 @@ namespace BlazingTrails.Shared.Features.ManageTrails
 		public int TimeInMinutes { get; set; }
 		public int Length { get; set; }
 
+		/// <summary>
+		///     Имя файла изображения тропы
+		/// </summary>
+		public string? Image { get; set; }
+
+		public ImageAction ImageAction { get; set; }
+
 		public List<RouteInstruction> Route { get; set; } = new List<RouteInstruction>();
+	}
+
+	/// <summary>
+	///     Различные операции, которые доступны для изображения
+	/// </summary>
+	public enum ImageAction
+	{
+		None,
+		Add,
+		Remove,
 	}
 
 	/// <summary>
 	///     Определены правила валидации на основе FluentValidation пакета
 	/// </summary>
-	public class TrailValidator: AbstractValidator<TrailDto>
+	public class TrailValidator : AbstractValidator<TrailDto>
 	{
 		public TrailValidator()
 		{
@@ -33,12 +50,12 @@ namespace BlazingTrails.Shared.Features.ManageTrails
 			RuleFor(x => x.Length).GreaterThan(0).WithMessage("Укажите длину маршрута!");
 			RuleFor(x => x.TimeInMinutes).GreaterThan(0).WithMessage("Укажите затрачиваемое на маршрут время!");
 			RuleFor(x => x.Route).NotEmpty().WithMessage("Укажите одну и более дорожную инструкцию!");
-			
+
 			RuleForEach(x => x.Route).SetValidator(new RouteInstructionValidator());
 		}
 	}
 
-	public class RouteInstructionValidator: AbstractValidator<TrailDto.RouteInstruction>
+	public class RouteInstructionValidator : AbstractValidator<TrailDto.RouteInstruction>
 	{
 		public RouteInstructionValidator()
 		{
