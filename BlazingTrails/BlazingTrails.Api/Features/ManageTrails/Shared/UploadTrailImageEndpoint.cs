@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
-namespace BlazingTrails.Api.Features.ManageTrails
+namespace BlazingTrails.Api.Features.ManageTrails.Shared
 {
 	/// <summary>
 	///     Конечная точка для сохранения файлов изображений
 	/// </summary>
-	public class UploadTrailImageEndpoint: EndpointBaseAsync.WithRequest<int>.WithActionResult<string>
+	public class UploadTrailImageEndpoint : EndpointBaseAsync.WithRequest<int>.WithActionResult<string>
 	{
 		private readonly BlazingTrailsContext _database;
 
@@ -44,15 +44,21 @@ namespace BlazingTrails.Api.Features.ManageTrails
 
 			//Меняем размеры загружаемого изображения на свои:
 			var resizeOptions = new ResizeOptions
-				{
-					Mode = ResizeMode.Pad,
-					Size = new Size(640, 426),
-				};
+			{
+				Mode = ResizeMode.Pad,
+				Size = new Size(640, 426),
+			};
 
 			using (Image image = await Image.LoadAsync(file.OpenReadStream(), cancellationToken))
 			{
 				image.Mutate(x => x.Resize(resizeOptions));
 				await image.SaveAsJpegAsync(saveLocation, cancellationToken);
+			}
+
+			//Если уже есть изображение, его удалить, а новое сохранить
+			if (!string.IsNullOrWhiteSpace(trail.Image))
+			{
+				System.IO.File.Delete(Path.Combine(Directory.GetCurrentDirectory(), "Images", trail.Image));
 			}
 
 			trail.Image = filename;

@@ -12,5 +12,7 @@ namespace BlazingTrails.Shared.Features.ManageTrails.EditTrail
 		public record RouteInstruction(int Id, int Stage, string Description);
 
 		public const string RouteTemplate = "/api/trails/{trailId}";
+
+		public static string RouteTemplateFormat(int t) => RouteTemplate.Replace("{trailId}", t.ToString());
 	}
 }
